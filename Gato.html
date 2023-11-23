@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voilà des Chats pour Lauana</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #E0FFFF, #B0C4DE);
+    }
+
+    #title {
+      font-size: 60px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333333;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    #cat-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #cat {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #cat:hover {
+      transform: scale(1.1);
+    }
+
+    #click-text {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #555555;
+    }
+
+    #counter {
+      margin-top: 20px;
+      font-size: 36px;
+      color: #555555;
+      display: block;
+    }
+
+    /* Styles pour la modal */
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    #modal-content {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #close-modal {
+      cursor: pointer;
+      font-size: 18px;
+      color: #555555;
+      margin-top: 10px;
+    }
+
+    /* Styles pour la "page blanche" */
+    #white-page {
+      display: none; /* La "page blanche" est initialement cachée */
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #custom-message {
+      font-size: 48px;
+      font-family: 'Comic Sans MS', cursive; /* Police un peu absurde */
+      margin-bottom: 20px;
+      text-decoration: underline; /* Ajout du soulignement pour indiquer le lien */
+      cursor: pointer; /* Changement du curseur pour indiquer l'interactivité */
+      transition: color 0.3s ease-in-out, transform 0.5s ease-in-out;
+      padding: 10px; /* Espace à l'intérieur de la bordure */
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    #custom-message.fall {
+      animation: fall 2s ease-in-out;
+    }
+
+    #custom-message:hover {
+      color: #0000FF; /* Changement de couleur au survol pour ressembler à un lien hypertexte standard */
+      transform: scale(1.1); /* Effet de zoom au survol */
+    }
+
+    #cat-video {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="title">Voilà des Chats pour Lauana</div>
+
+  <div id="cat-container">
+    <img id="cat" src="https://placekitten.com/1920/1080" alt="Cute Cat" onclick="changeCatImage()">
+  </div>
+
+  <div id="click-text">Clique sur le chat</div>
+
+  <div id="counter"><span id="clicks-left">15</span></div>
+
+  <!-- Modal pour la "page blanche" -->
+  <div id="modal">
+    <div id="modal-content">
+      <p>Bienvenue sur la Page Blanche !</p>
+      <div id="close-modal" onclick="closeModal()">Fermer</div>
+    </div>
+  </div>
+
+  <!-- "Page blanche" -->
+  <div id="white-page">
+    <a id="custom-message" href="https://youtube.com/shorts/uSPrInyAgVw?si=KgLEiAWmMUj4Weln" target="_blank">FOFINHO GATO</a>
+  </div>
+
+  <script>
+    const catImages = [
+      "https://placekitten.com/1920/1080",
+      "https://placekitten.com/1920/1200",
+      "https://placekitten.com/1600/900",
+      "https://placekitten.com/850/650",
+      "https://placekitten.com/1400/1000",
+      "https://placekitten.com/1800/1200",
+      "https://placekitten.com/2000/1500",
+      "https://placekitten.com/1500/1060",
+      "https://placekitten.com/1300/900",
+      "https://placekitten.com/1700/1100",
+      "https://placekitten.com/1100/700",
+      "https://placekitten.com/1900/1300",
+      "https://placekitten.com/2100/1600",
+      "https://placekitten.com/1700/1400",
+      "https://placekitten.com/1400/1200",
+      // ... Ajoutez autant d'URLs d'images que vous le souhaitez
+    ];
+
+    let currentCatIndex = 0;
+    let clickCount = 0;
+    const maxClicks = 15;
+
+    function changeCatImage() {
+      clickCount++;
+
+      if (clickCount === maxClicks) {
+        // Cacher la modal
+        document.getElementById("modal").style.display = "none";
+        // Cacher le compteur
+        document.getElementById("counter").style.display = "none";
+        // Ajouter la classe d'animation au texte
+        const customMessage = document.getElementById("custom-message");
+        customMessage.classList.add("fall");
+        // Appliquer une petite modification pour forcer la réapplication des styles
+        customMessage.style.opacity = 0.99;
+        setTimeout(() => customMessage.style.opacity = 1, 0);
+        // Afficher la "page blanche"
+        document.getElementById("white-page").style.display = "block";
+      } else {
+        currentCatIndex = (currentCatIndex + 1) % catImages.length;
+        const catElement = document.getElementById("cat");
+        catElement.src = catImages[currentCatIndex];
+
+        // Mettre à jour le compteur
+        const clicksLeft = maxClicks - clickCount;
+        document.getElementById("clicks-left").innerText = clicksLeft;
+
+        // Cacher le compteur si clicksLeft est égal à 0
+        if (clicksLeft === 0) {
+          document.getElementById("counter").style.display = "none";
+          // Ajouter la classe d'animation au texte
+          const customMessage = document.getElementById("custom-message");
+          customMessage.classList.add("fall");
+          // Appliquer une petite modification pour forcer la réapplication des styles
+          customMessage.style.opacity = 0.99;
+          setTimeout(() => customMessage.style.opacity = 1, 0);
+          // Afficher la "page blanche"
+          document.getElementById("white-page").style.display = "block";
+        }
+      }
+    }
+
+    function closeModal() {
+      // Cacher la modal
+      document.getElementById("modal").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
+
